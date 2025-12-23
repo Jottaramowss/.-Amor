@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Engenharia | Sistema de Celebração</title>
+    <style>
+        /* CSS - Estilização Completa */
+        :root {
+            --primary: #00ff9d;
+            --accent: #00b8ff;
+            --bg-dark: rgba(10, 10, 10, 0.95);
+        }
+
+        body, html {
+            margin: 0; padding: 0;
+            height: 100%;
+            background: #000;
+            font-family: 'Consolas', 'Fira Code', monospace;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #matrixCanvas {
+            position: fixed; top: 0; left: 0;
+            z-index: -1; opacity: 0.4;
+        }
+
+        .terminal-window {
+            width: 90%;
+            max-width: 650px;
+            background: var(--bg-dark);
+            border: 1px solid #333;
+            border-radius: 12px;
+            box-shadow: 0 0 40px rgba(0, 255, 157, 0.15);
+            backdrop-filter: blur(8px);
+            overflow: hidden;
+        }
+
+        header {
+            background: #222;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #333;
+        }
+
+        .btns { display: flex; gap: 8px; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        .red { background: #ff5f56; }
+        .yellow { background: #ffbd2e; }
+        .green { background: #27c93f; }
+        .title { color: #888; font-size: 13px; margin-left: 15px; }
+
+        #terminal-content { padding: 25px; color: var(--primary); font-size: 14px; min-height: 250px; }
+        
+        .input-area { display: flex; gap: 10px; margin-top: 15px; align-items: center; }
+        .prefix { color: var(--accent); }
+        
+        #user-input {
+            background: transparent; border: none; color: white;
+            outline: none; font-family: inherit; font-size: 14px; width: 100%;
+        }
+
+        .hidden { display: none !important; }
+
+        /* Card de Celebração Final */
+        #gift-card {
+            padding: 40px; text-align: center; color: white;
+            animation: slideUp 0.8s ease-out;
+        }
+
+        .badge {
+            background: var(--primary); color: #000;
+            display: inline-block; padding: 5px 15px;
+            font-size: 11px; font-weight: bold; border-radius: 20px; margin-bottom: 15px;
+        }
+
+        h1 { font-size: 2.2rem; margin: 10px 0; color: var(--primary); }
+
+        .skill-container { margin: 30px 0; text-align: left; }
+        .skill-bar {
+            background: #333; height: 22px; margin: 12px 0;
+            border-radius: 11px; overflow: hidden; position: relative;
+        }
+        .fill {
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            height: 100%; font-size: 11px; line-height: 22px;
+            color: #000; font-weight: bold; padding-left: 15px;
+            transition: width 2s ease-in-out;
+        }
+
+        .footer-msg {
+            margin-top: 30px; font-size: 13px; color: #888;
+            border-top: 1px solid #333; padding-top: 20px;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="matrixCanvas"></canvas>
+
+    <div class="terminal-window">
+        <header>
+            <div class="btns">
+                <span class="dot red"></span>
+                <span class="dot yellow"></span>
+                <span class="dot green"></span>
+            </div>
+            <div class="title">admin@engine-celebration:~</div>
+        </header>
+        
+        <div id="terminal-content">
+            <div id="output">
+                <p>[SYSTEM] Aguardando autenticação da Engenheira...</p>
+                <p>[HINT] Digite <span style="color:white">help</span> para comandos ou <span style="color:var(--primary)">deploy</span> para iniciar.</p>
+            </div>
+            <div class="input-area" id="input-line">
+                <span class="prefix">root@dev:~$</span>
+                <input type="text" id="user-input" autofocus autocomplete="off">
+            </div>
+        </div>
+
+        <div id="gift-card" class="hidden">
+            <div class="badge">BUILD: SUCCESS v.2025.12</div>
+            <h1>FELIZ ANIVERSÁRIO! 🚀</h1>
+            <p>Os cálculos de engenharia foram processados e o resultado é incontestável:</p>
+            
+            <div class="skill-container">
+                <div class="skill-bar"><div class="fill" style="width: 100%;">INTELIGÊNCIA: 100%</div></div>
+                <div class="skill-bar"><div class="fill" style="width: 98%;">CHEIRIOSA: 10000000% (Nao tem como contar isso...)</div></div>
+                <div class="skill-bar"><div class="fill" style="width: 100%;">BELEZA: MAX</div></div>
+            </div>
+
+            <p style="font-style: italic; color: var(--accent);">"Você é a solução mais elegante para qualquer desafio."</p>
+
+            <div class="footer-msg">Compilado com carinho Pelo Seu Gatinho. ❤️</div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+
+    <script>
+        // 1. EFEITO MATRIX
+        const canvas = document.getElementById('matrixCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const chars = "0101101001ENGINEER1010FULLSTACK0101";
+        const fontSize = 14;
+        const columns = canvas.width / fontSize;
+        const drops = Array(Math.floor(columns)).fill(1);
+
+        function drawMatrix() {
+            ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#00ff9d";
+            ctx.font = fontSize + "px monospace";
+            for (let i = 0; i < drops.length; i++) {
+                const text = chars.charAt(Math.floor(Math.random() * chars.length));
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            }
+        }
+        setInterval(drawMatrix, 50);
+
+        // 2. LÓGICA DO TERMINAL
+        const userInput = document.getElementById('user-input');
+        const output = document.getElementById('output');
+        const terminalContent = document.getElementById('terminal-content');
+        const giftCard = document.getElementById('gift-card');
+        const inputLine = document.getElementById('input-line');
+
+        const cmdResponses = {
+            'help': 'Comandos: status, clear, deploy, version',
+            'status': '[OK] Coração operacional. [OK] Engenheira incrível detectada.',
+            'version': 'Version 2.0.25-stable. Licenciado para: Pessoa Favorita.',
+            'clear': 'CLEAR'
+        };
+
+        userInput.addEventListener('keydown', async (e) => {
+            if (e.key === 'Enter') {
+                const cmd = userInput.value.toLowerCase().trim();
+                userInput.value = '';
+
+                if (cmd === 'deploy') {
+                    await startDeploySequence();
+                } else if (cmd === 'clear') {
+                    output.innerHTML = '';
+                } else if (cmdResponses[cmd]) {
+                    output.innerHTML += `<p><span class="prefix">> ${cmd}</span><br><span style="color:#888">${cmdResponses[cmd]}</span></p>`;
+                } else if (cmd !== "") {
+                    output.innerHTML += `<p><span style="color:red">ERROR:</span> Comando '${cmd}' não encontrado.</p>`;
+                }
+                terminalContent.scrollTop = terminalContent.scrollHeight;
+            }
+        });
+
+        async function startDeploySequence() {
+            inputLine.classList.add('hidden');
+            const steps = [
+                "> Iniciando handshake de celebração...",
+                "> Carregando módulos de engenharia aplicada...",
+                "> Verificando nível de admiração... [100%]",
+                "> Renderizando surpresa...",
+                "> DEPLOY REALIZADO COM SUCESSO!"
+            ];
+
+            for (let s of steps) {
+                const p = document.createElement('p');
+                p.style.color = s.includes('SUCESSO') ? "var(--primary)" : "var(--accent)";
+                p.textContent = s;
+                output.appendChild(p);
+                terminalContent.scrollTop = terminalContent.scrollHeight;
+                await new Promise(r => setTimeout(r, 800));
+            }
+
+            setTimeout(() => {
+                terminalContent.classList.add('hidden');
+                giftCard.classList.remove('hidden');
+                triggerConfetti();
+            }, 1000);
+        }
+
+        function triggerConfetti() {
+            const duration = 3 * 1000;
+            const end = Date.now() + duration;
+
+            (function frame() {
+                confetti({
+                    particleCount: 3,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 },
+                    colors: ['#00ff9d', '#00b8ff']
+                });
+                confetti({
+                    particleCount: 3,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 },
+                    colors: ['#00ff9d', '#00b8ff']
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            }());
+        }
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+</html>
