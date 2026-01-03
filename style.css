@@ -1,0 +1,65 @@
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #ffdfdf 0%, #ffafbd 100%);
+    font-family: 'Georgia', serif; /* Fonte mais elegante para textos longos */
+    overflow-x: hidden;
+    color: #b91d5a;
+}
+
+.container {
+    padding: 50px;
+    z-index: 2;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 30px;
+    backdrop-filter: blur(15px);
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    width: 80%;
+    max-width: 800px; /* Aumentado para o texto respirar */
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    text-align: left; /* Alinhamento à esquerda para textos longos */
+}
+
+h1 {
+    font-size: 3rem;
+    margin-bottom: 30px;
+    text-align: center;
+    font-weight: normal;
+    animation: fadeIn 2s ease-in;
+}
+
+p {
+    font-size: 1.4rem;
+    line-height: 1.8;
+    min-height: 300px;
+    color: #444;
+}
+
+.heart {
+    position: absolute;
+    font-size: 25px;
+    color: #ff4d6d;
+    animation: float 7s infinite linear;
+    opacity: 0.5;
+    z-index: 1;
+}
+
+@keyframes float {
+    0% { transform: translateY(110vh) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(-15vh) rotate(360deg); opacity: 0; }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Scroll suave para textos muito grandes em telas pequenas */
+@media (max-height: 700px) {
+    .container { margin: 20px; height: auto; }
+    body { height: auto; overflow-y: auto; }
+}
